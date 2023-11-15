@@ -2,13 +2,16 @@ import psycopg
 import pandas as pd
 import sys
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
+import datetime
 
 filename = sys.argv[1]
 batch = pd.read_csv(filename)
 
 # Data Cleaning
-batch.replace(to_replace={'-999999.0': pd.NA, 'NA': pd.NA})
-
+batch.replace(to_replace={'-999999.0': None, 'NA': None})
+# @TODO use lambda to turn the collection_week column into a datetime
+# f = datetime.datetime.strptime() HALF BAKED
+# batch["collection_week"] = batch.collection_week.apply(f)
 # This is the weekly beds information for each hospital, needs to be inserted
 # into the `beds` table.
 

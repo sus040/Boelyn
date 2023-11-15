@@ -1,13 +1,13 @@
 DROP TABLE IF EXISTS hospital, beds, quality;
 
 CREATE TABLE hospital (
-    hospital_pk VARCHAR(255) NOT NULL PRIMARY KEY,
-    hospital_name VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    zip VARCHAR(10) NOT NULL,
-    fips_code VARCHAR(20) NOT NULL,
-    state CHAR(2) NOT NULL,
+    hospital_pk VARCHAR(255) PRIMARY KEY,
+    hospital_name VARCHAR(255),
+    address VARCHAR(255),
+    city VARCHAR(255),
+    zip VARCHAR(10),
+    fips_code VARCHAR(20),
+    state CHAR(2),
     latitude DECIMAL(6,3),
     longitude DECIMAL(6,3)
 );
@@ -32,7 +32,7 @@ CREATE TABLE quality (
     Facility_ID VARCHAR(255) NOT NULL REFERENCES hospital(hospital_pk),
     hospital_type VARCHAR(255),
     hospital_ownership VARCHAR(255),
-    emergency_services BOOLEAN NOT NULL,
+    emergency_services BOOLEAN,
     quality_rating INT,
-    rating_date DATE NOT NULL
+    rating_date DATE
 );
