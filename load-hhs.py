@@ -1,7 +1,7 @@
 import psycopg
 import pandas as pd
 import sys
-from credentials import DBNAME, USER, PASSWORD
+from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 
 filename = sys.argv[1]
 batch = pd.read_csv(filename)
