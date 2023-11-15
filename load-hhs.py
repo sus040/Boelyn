@@ -7,7 +7,7 @@ filename = sys.argv[1]
 batch = pd.read_csv(filename)
 
 # Data Cleaning
-
+batch.replace(to_replace={'-999999.0': pd.NA, 'NA': pd.NA})
 
 # This is the weekly beds information for each hospital, needs to be inserted
 # into the `beds` table.
