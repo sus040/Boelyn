@@ -1,8 +1,9 @@
 import os
 import argparse
 import pandas as pd
-import psycopg2
+import psycopg
 from datetime import datetime
+from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 
 # Define command-line arguments
 parser = argparse.ArgumentParser(description='Load hospital quality data into the database.')
@@ -23,11 +24,9 @@ except Exception as e:
 def insert_quality_data(quality_data, date):
     try:
         print("Connecting to the database...")
-        with psycopg2.connect(
-            host=os.environ.get('DB_HOST'),
-            dbname=os.environ.get('DB_NAME'),
-            user=os.environ.get('DB_USER'),
-            password=os.environ.get('DB_PASSWORD')
+        with psycopg.connect(
+        host="pinniped.postgres.database.azure.com",
+        dbname=DBNAME, user=USER, password=PASSWORD
         ) as conn:
 
             with conn.cursor() as cursor:
