@@ -2,11 +2,12 @@ import os
 import argparse
 import pandas as pd
 import psycopg
+from datetime import datetime
+from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 
-parser = argparse.ArgumentParser(
-    description='Load hospital quality data into the database.')
-parser.add_argument(
-    'date', type=str, help='Date of the quality data (YYYY-MM-DD)')
+# Define command-line arguments
+parser = argparse.ArgumentParser(description='Load hospital quality data into the database.')
+parser.add_argument('date', type=str, help='Date of the quality data (YYYY-MM-DD)')
 parser.add_argument('csv_file', type=str, help='CSV file name')
 args = parser.parse_args()
 
@@ -19,28 +20,35 @@ except Exception as e:
     print(f"Error reading CSV file: {e}")
     exit()
 
-
-try:
-    conn = psycopg.connect(
-        host="pinniped.postgres.database.azure.com",
-        dbname="jamiekim",
-        user="jamiekim",
-        password="aBG1x?8P96"
-    )
-    cursor = conn.cursor()
-except Exception as e:
-    print(f"Error connecting to the database: {e}")
-    exit()
-
-
+# Define a function to insert data into the PostgreSQL table
 def insert_quality_data(quality_data, date):
-    for index, row in quality_data.iterrows():
-        cursor.execute("INSERT INTO quality (Facility_ID, hospital_type,\
-                       hospital_ownership, emergency_services, quality_rating,\
-                       rating_date) VALUES (%s, %s, %s, %s, %s, %s)",
-                       (row['facility_id'], row['hospital_type'],
-                        row['hospital_ownership'], row['emergency_services'],
-                        row['hospital_overall_rating'], date))
+    try:
+        print("Connecting to the database...")
+        with psycopg.connect(
+        host="pinniped.postgres.database.azure.com",
+        dbname=DBNAME, user=USER, password=PASSWORD
+        ) as conn:
 
+            with conn.cursor() as cursor:
+                print("Connected. Checking if 'quality' table exists...")
+                cursor.execute("SELECT to_regclass('quality');")
+                result = cursor.fetchone()
+                if result and result[0]:
+                    print("Table 'quality' exists. Proceeding with data insertion.")
+                else:
+                    print("Table 'quality' does not exist. Exiting.")
+                    return
 
+                for _, row in quality_data.iterrows():
+                    cursor.execute(
+                        "INSERT INTO \quality (Facility_ID, hospital_type, hospital_ownership, emergency_services, quality_rating, rating_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (row['Facility ID'], row['Hospital Type'], row['Hospital Ownership'],row['Emergency Services'], row['Hospital overall rating'], datetime.strptime(date, '%Y-%m-%d')))
+
+                conn.commit()
+                print("Data successfully inserted into the 'quality' table")
+
+    except Exception as e:
+        print(f"Error inserting data into the database: {e}")
+
+# Call the function to insert data into the PostgreSQL table
 insert_quality_data(data, args.date)
