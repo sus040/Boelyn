@@ -12,16 +12,16 @@ parser.add_argument(
 parser.add_argument('csv_file', type=str, help='CSV file name')
 args = parser.parse_args()
 
-# Read data from CSV file into a Pandas DataFrame
+# Read data from CSV file into a pandas dataframe
 try:
     data = pd.read_csv(args.csv_file)
     print("Data read from CSV successfully:")
-    print(data.head())  # Print the first few rows of the DataFrame
+    print(data.head())  # Print the first few rows of the dataframe
 except Exception as e:
     print(f"Error reading CSV file: {e}")
     exit()
 
-# Define a function to insert data into the PostgreSQL table
+# Define a function to insert data into the postgreSQL table
 
 
 def insert_quality_data(quality_data, date):
@@ -63,5 +63,5 @@ def insert_quality_data(quality_data, date):
         print(f"Error inserting data into the database: {e}")
 
 
-# Call the function to insert data into the PostgreSQL table
+# Call the function to insert data into the postgreSQL table
 insert_quality_data(data, args.date)

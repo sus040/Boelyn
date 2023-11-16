@@ -21,6 +21,7 @@ conn = psycopg.connect(
     dbname=DBNAME, user=USER, password=PASSWORD
 )
 
+
 cur = conn.cursor()
 successes, fails = 0, 0
 
@@ -30,7 +31,19 @@ literal = (
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
-print(batch['geocoded_hospital_address'])
+def geocode(num):
+    if isinstance(num, str):
+        coords = num.replace('POINT (', '').replace(')', '').split()
+        longitude = int(float(coords[0]))
+        latitude = int(float(coords[1]))
+        return latitude, longitude
+    else:
+        return None, None
+
+for i, row in batch.iterrows():
+    latitude, longitude = geocode(row['geocoded_hospital_address'])
+
+
 # @TODO our df has 'geocoded_hospital_address', we need to break into
 # 'latitude' and 'longitude'
 for idx, row in batch.iterrows():
