@@ -44,18 +44,17 @@ def insert_quality_data(quality_data, date):
 
                 for _, row in quality_data.iterrows():
                     cursor.execute(
-                                    "INSERT INTO quality (Facility_ID, "
-                                    "hospital_type, "
-                                    "hospital_ownership, emergency_services, "
-                                    "quality_rating, rating_date)"
-                                    "VALUES (%s, %s, %s, %s, %s, %s)",
-                                    (row['Facility ID'],
-                                    row['Hospital Type'],
-                                    row['Hospital Ownership'],
-                                    row['Emergency Services'],
-                                    row['Hospital overall rating'],
-                                    datetime.strptime(date, '%Y-%m-%d'))) 
-                        
+                        "INSERT INTO quality (Facility_ID, "
+                        "hospital_type, "
+                        "hospital_ownership, emergency_services, "
+                        "quality_rating, rating_date)"
+                        "VALUES (%s, %s, %s, %s, %s, %s)",
+                        (row['Facility ID'],
+                         row['Hospital Type'],
+                         row['Hospital Ownership'],
+                         row['Emergency Services'],
+                         row['Hospital overall rating'],
+                         datetime.strptime(date, '%Y-%m-%d')))
 
                 conn.commit()
                 print("Data successfully inserted into the 'quality' table")
