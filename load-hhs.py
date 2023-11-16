@@ -24,7 +24,7 @@ conn = psycopg.connect(
 cur = conn.cursor()
 
 for idx, row in batch.iterrows():
-    print(row)
+    # check if this hospital is in the database already
     cur.execute("INSERT INTO beds (hospital_pk, collection_week, "
                 "all_adult_hospital_beds_7_day_avg, "
                 "all_pediatric_inpatient_beds_7_day_avg, "
