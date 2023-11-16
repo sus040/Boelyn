@@ -26,11 +26,13 @@ successes, fails = 0, 0
 
 literal = (
     "INSERT INTO hospital (hospital_pk, hospital_name, address, city, zip, "
-    "fips_code, state, latitude, longitude"
+    "fips_code, state, latitude, longitude)"
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
-# ASSUMPTION: the hospital_pk column is unique, so we have 1 hospital per row
+print(batch['geocoded_hospital_address'])
+# @TODO our df has 'geocoded_hospital_address', we need to break into
+# 'latitude' and 'longitude'
 for idx, row in batch.iterrows():
     try:
         cur.execute(literal,
@@ -39,8 +41,7 @@ for idx, row in batch.iterrows():
                          row['state'], row['latitude'], row['longitude']
                          ]))
         successes += 1
-    except Exception as e:  # should make this specific
-        print(e)
+    except Exception:  # should make this specific
         fails += 1
     1 / 0  # just to halt execution
 
