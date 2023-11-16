@@ -25,29 +25,33 @@ cur = conn.cursor()
 successes, fails = 0, 0
 
 # ASSUMPTION: the hospital_pk column is unique, so we have 1 hospital per row
-for idx, row in batch.iterrows():
-    try:
-        cur.execute()
-        successes += 1
-    except Exception:  # should make this specific
-        fails += 1
+# for idx, row in batch.iterrows():
+#    try:
+#        cur.execute()
+#        successes += 1
+#    except Exception:  # should make this specific
+#        fails += 1
 
 print("Successfully added:", str(successes), "rows to the hospitals table."
       "\n" + str(fails) + "rows rejected", sep=" ")
 successes, fails = 0, 0
 
+literal = (
+    "INSERT INTO beds (hospital_pk, collection_week, "
+    "all_adult_hospital_beds_7_day_avg, "
+    "all_pediatric_inpatient_beds_7_day_avg, "
+    "all_adult_hospital_inpatient_bed_"
+    "occupied_7_day_coverage, "
+    "all_pediatric_inpatient_bed_occupied_7_day_avg, "
+    "total_icu_beds_7_day_avg, icu_beds_used_7_day_avg, "
+    "inpatient_beds_used_covid_7_day_avg, "
+    "staffed_icu_adult_patients_confirmed_covid_7_day_avg)"
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+)
+
 for idx, row in batch.iterrows():
     try:
-        cur.execute("INSERT INTO beds (hospital_pk, collection_week, "
-                    "all_adult_hospital_beds_7_day_avg, "
-                    "all_pediatric_inpatient_beds_7_day_avg, "
-                    "all_adult_hospital_inpatient_bed_"
-                    "occupied_7_day_coverage, "
-                    "all_pediatric_inpatient_bed_occupied_7_day_avg, "
-                    "total_icu_beds_7_day_avg, icu_beds_used_7_day_avg, "
-                    "inpatient_beds_used_covid_7_day_avg, "
-                    "staffed_icu_adult_patients_confirmed_covid_7_day_avg)"
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        cur.execute(literal,
                     (row['hospital_pk'], row['collection_week'],
                      row['all_adult_hospital_beds_7_day_avg'],
                      row['all_pediatric_inpatient_beds_7_day_avg'],
