@@ -1,13 +1,17 @@
 import psycopg
 import pandas as pd
 import sys
-from credentials import DBNAME, USER, PASSWORD
+from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
+import datetime
 
 filename = sys.argv[1]
 batch = pd.read_csv(filename)
 
 # Data Cleaning
-
+batch.replace(to_replace={'-999999.0': None, 'NA': None})
+batch.collection_week = batch.collection_week.apply(
+    lambda x: datetime.datetime.strptime(x, '%Y-%m-%d')
+)
 
 # This is the weekly beds information for each hospital, needs to be inserted
 # into the `beds` table.
@@ -30,17 +34,16 @@ for idx, row in batch.iterrows():
                 "inpatient_beds_used_covid_7_day_avg, "
                 "staffed_icu_adult_patients_confirmed_covid_7_day_avg)"
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (str(row['hospital_pk']), str(row['collection_week']),
-                 str(row['all_adult_hospital_beds_7_day_avg']),
-                 str(row['all_pediatric_inpatient_beds_7_day_avg']),
-                 str(row['all_adult_hospital_inpatient_bed_occupied_7_'
-                         'day_coverage']),
-                 str(row['all_pediatric_inpatient_bed_occupied_7_day_avg']),
-                 str(row['total_icu_beds_7_day_avg']),
-                 str(row['icu_beds_used_7_day_avg']),
-                 str(row['inpatient_beds_used_covid_7_day_avg']),
-                 str(row['staffed_icu_adult_patients_confirmed'
-                         '_covid_7_day_avg'])))
+                (row['hospital_pk'], row['collection_week'],
+                 row['all_adult_hospital_beds_7_day_avg'],
+                 row['all_pediatric_inpatient_beds_7_day_avg'],
+                 row['all_adult_hospital_inpatient_bed_occupied_7_'
+                     'day_coverage'],
+                 row['all_pediatric_inpatient_bed_occupied_7_day_avg'],
+                 row['total_icu_beds_7_day_avg'],
+                 row['icu_beds_used_7_day_avg'],
+                 row['inpatient_beds_used_covid_7_day_avg'],
+                 row['staffed_icu_adult_patients_confirmed_covid_7_day_avg']))
 
 conn.commit()
 conn.close()
