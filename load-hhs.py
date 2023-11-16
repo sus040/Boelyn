@@ -9,9 +9,10 @@ batch = pd.read_csv(filename)
 
 # Data Cleaning
 batch.replace(to_replace={'-999999.0': None, 'NA': None})
-# @TODO use lambda to turn the collection_week column into a datetime
-# f = datetime.datetime.strptime() HALF BAKED
-# batch["collection_week"] = batch.collection_week.apply(f)
+batch.collection_week = batch.collection_week.apply(
+    lambda x: datetime.datetime.strptime(x, '%Y-%m-%d')
+)
+
 # This is the weekly beds information for each hospital, needs to be inserted
 # into the `beds` table.
 
