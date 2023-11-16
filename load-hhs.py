@@ -24,13 +24,23 @@ conn = psycopg.connect(
 cur = conn.cursor()
 successes, fails = 0, 0
 
+literal = (
+    "INSERT INTO hospital (hospital_pk, hospital_name, address, city, zip, "
+    "fips_code, state, latitude, longitude"
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+)
+
 # ASSUMPTION: the hospital_pk column is unique, so we have 1 hospital per row
-# for idx, row in batch.iterrows():
-#    try:
-#        cur.execute()
-#        successes += 1
-#    except Exception:  # should make this specific
-#        fails += 1
+for idx, row in batch.iterrows():
+    try:
+        cur.execute(literal,
+                    (row['hospital_pk', row['hospital_name'], row['address'],
+                         row['city'], row['zip'], row['fips_code'],
+                         row['state'], row['latitude'], row['longitude']
+                         ]))
+        successes += 1
+    except Exception:  # should make this specific
+        fails += 1
 
 print("Successfully added:", str(successes), "rows to the hospitals table."
       "\n" + str(fails) + "rows rejected", sep=" ")
@@ -62,11 +72,15 @@ for idx, row in batch.iterrows():
                      row['icu_beds_used_7_day_avg'],
                      row['inpatient_beds_used_covid_7_day_avg'],
                      row[
-                         'staffed_icu_adult_patients_confirmed_covid_7_day_avg'
-                        ]))
+                        'staffed_icu_adult_patients_confirmed_covid_7_day_avg'
+                     ]))
         successes += 1
     except Exception:  # should make this specific
         fails += 1
+
+print("Successfully added:", str(successes), "rows to the beds table."
+      "\n" + str(fails) + "rows rejected", sep=" ")
+successes, fails = 0, 0
 
 conn.commit()
 conn.close()
