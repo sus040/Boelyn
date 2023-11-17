@@ -4,6 +4,21 @@ import sys
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 import datetime
 
+######################
+#  Helper Functions  #
+######################
+
+
+def extract_latitude(geocoded):
+    splt = geocoded.split(" ")
+    return splt[1]
+
+
+def extract_longitude(geocoded):
+    splt = geocoded.split(" ")
+    return splt[2]
+
+
 filename = sys.argv[1]
 batch = pd.read_csv(filename)
 
@@ -30,7 +45,10 @@ literal = (
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
-print(batch['geocoded_hospital_address'])
+batch['latitude'] = batch.geocoded_hospital_address.apply(extract_latitude)
+batch['longitude'] = batch.geocoded_hospital_address.apply(extract_longitude)
+1 / 0
+
 # @TODO our df has 'geocoded_hospital_address', we need to break into
 # 'latitude' and 'longitude'
 for idx, row in batch.iterrows():
@@ -43,7 +61,6 @@ for idx, row in batch.iterrows():
         successes += 1
     except Exception:  # should make this specific
         fails += 1
-    1 / 0  # just to halt execution
 
 print("Successfully added:", str(successes), "rows to the hospitals table."
       "\n" + str(fails) + "rows rejected", sep=" ")
