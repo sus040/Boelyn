@@ -33,7 +33,7 @@ cur.execute("CREATE TABLE beds ("
             "icu_beds_used_7_day_avg NUMERIC, "
             "inpatient_beds_used_covid_7_day_avg NUMERIC, "
             "staffed_icu_adult_patients_confirmed_covid_7_day_avg NUMERIC, "
-            "FOREIGN KEY (hospital_pk) REFERENCES hospital(hospital_pk)")
+            "FOREIGN KEY (hospital_pk) REFERENCES hospital(hospital_pk))")
 
 cur.execute("CREATE TABLE quality("
             "quality_id SERIAL PRIMARY KEY, "
@@ -43,7 +43,7 @@ cur.execute("CREATE TABLE quality("
             "hospital_ownership VARCHAR(255), "
             "emergency_services BOOLEAN, "
             "quality_rating INT, "
-            "rating_date DATE")
+            "rating_date DATE)")
 
 conn.commit()
 conn.close()
