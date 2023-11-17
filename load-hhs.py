@@ -10,6 +10,7 @@ import datetime
 
 
 def geocode(num):
+    """Handles geocode string unpacking for latitude/longitude"""
     if isinstance(num, str):
         coords = num.replace('POINT (', '').replace(')', '').split()
         longitude = int(float(coords[0]))
@@ -21,6 +22,8 @@ def geocode(num):
 
 filename = sys.argv[1]
 batch = pd.read_csv(filename)
+
+print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
 batch.replace(to_replace={'-999999.0': None, 'NA': None})
@@ -54,8 +57,7 @@ for idx, row in batch.iterrows():
                      row['city'], row['zip'], row['fips_code'],
                      row['state'], latitude, longitude))
         successes += 1
-    except Exception as e:  # should make this specific
-        print(e)
+    except Exception:  # should make this specific
         fails += 1
 
 print("Successfully added:", str(successes), "rows to the hospitals table."
