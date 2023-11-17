@@ -44,3 +44,6 @@ cur.execute("CREATE TABLE quality("
             "emergency_services BOOLEAN, "
             "quality_rating INT, "
             "rating_date DATE")
+
+conn.commit()
+conn.close()
