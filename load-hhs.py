@@ -57,8 +57,7 @@ for idx, row in batch.iterrows():
                      row['city'], row['zip'], row['fips_code'],
                      row['state'], latitude, longitude))
         successes += 1
-    except Exception as e:  # should make this specific
-        print(e)
+    except Exception:  # should make this specific
         fails += 1
 
 print("Successfully added:", str(successes), "rows to the hospitals table."
