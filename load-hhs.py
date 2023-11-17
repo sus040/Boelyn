@@ -10,6 +10,7 @@ import datetime
 
 
 def geocode(num):
+    """Handles geocode string unpacking for latitude/longitude"""
     if isinstance(num, str):
         coords = num.replace('POINT (', '').replace(')', '').split()
         longitude = int(float(coords[0]))
