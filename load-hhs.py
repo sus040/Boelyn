@@ -50,16 +50,17 @@ for idx, row in batch.iterrows():
     latitude, longitude = geocode(row['geocoded_hospital_address'])
     try:
         cur.execute(literal,
-                    (row['hospital_pk', row['hospital_name'], row['address'],
-                         row['city'], row['zip'], row['fips_code'],
-                         row['state'], latitude, longitude
-                         ]))
+                    (row['hospital_pk'], row['hospital_name'], row['address'],
+                     row['city'], row['zip'], row['fips_code'],
+                     row['state'], latitude, longitude))
         successes += 1
-    except Exception:  # should make this specific
+    except Exception as e:  # should make this specific
+        print(e)
         fails += 1
 
 print("Successfully added:", str(successes), "rows to the hospitals table."
       "\n" + str(fails) + "rows rejected", sep=" ")
+
 successes, fails = 0, 0
 
 literal = (
