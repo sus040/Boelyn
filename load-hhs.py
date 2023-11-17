@@ -9,14 +9,14 @@ import datetime
 ######################
 
 
-def extract_latitude(geocoded):
-    splt = geocoded.split(" ")
-    return splt[1]
-
-
-def extract_longitude(geocoded):
-    splt = geocoded.split(" ")
-    return splt[2]
+def geocode(num):
+    if isinstance(num, str):
+        coords = num.replace('POINT (', '').replace(')', '').split()
+        longitude = int(float(coords[0]))
+        latitude = int(float(coords[1]))
+        return latitude, longitude
+    else:
+        return None, None
 
 
 filename = sys.argv[1]
@@ -46,27 +46,13 @@ literal = (
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
-def geocode(num):
-    if isinstance(num, str):
-        coords = num.replace('POINT (', '').replace(')', '').split()
-        longitude = int(float(coords[0]))
-        latitude = int(float(coords[1]))
-        return latitude, longitude
-    else:
-        return None, None
-
-for i, row in batch.iterrows():
-    latitude, longitude = geocode(row['geocoded_hospital_address'])
-
-
-# @TODO our df has 'geocoded_hospital_address', we need to break into
-# 'latitude' and 'longitude'
 for idx, row in batch.iterrows():
+    latitude, longitude = geocode(row['geocoded_hospital_address'])
     try:
         cur.execute(literal,
                     (row['hospital_pk', row['hospital_name'], row['address'],
                          row['city'], row['zip'], row['fips_code'],
-                         row['state'], row['latitude'], row['longitude']
+                         row['state'], latitude, longitude
                          ]))
         successes += 1
     except Exception:  # should make this specific
