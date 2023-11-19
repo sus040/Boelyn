@@ -21,6 +21,9 @@ except Exception as e:
     print(f"Error reading CSV file: {e}")
     exit()
 
+# Data Cleaning
+data['Hospital overall rating'].replace('Not Available', None, inplace=True)
+
 # Define a function to insert data into the postgreSQL table
 
 
@@ -42,7 +45,15 @@ def insert_quality_data(quality_data, date):
                     print("Table 'quality' does not exist. Exiting.")
                     return
 
+                skipped_rows = 0
                 for _, row in quality_data.iterrows():
+                    cursor.execute("SELECT COUNT(*) FROM hospital WHERE "
+                                   "hospital_pk = %s", (row['Facility ID'],))
+                    if cursor.fetchone()[0] == 0:
+                        skipped_rows += 1
+                        print(f"Facility ID {row['Facility ID']} not found in "
+                              "hospital table. Skipping.")
+                        continue
                     cursor.execute(
                         "INSERT INTO quality (Facility_ID, "
                         "hospital_type, "
@@ -57,7 +68,8 @@ def insert_quality_data(quality_data, date):
                          datetime.strptime(date, '%Y-%m-%d')))
 
                 conn.commit()
-                print("Data successfully inserted into the 'quality' table")
+                print("Data successfully inserted into the 'quality' table.")
+                print(f"Number of skipped rows: {skipped_rows}")
 
     except Exception as e:
         print(f"Error inserting data into the database: {e}")
