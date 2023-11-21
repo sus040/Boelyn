@@ -1,0 +1,38 @@
+This README provides details and instructions for using the Python scripts load-hhs.py and load-quality.py. These scripts are designed for loading hospital and quality data into a PostgreSQL database.
+
+- Overview
+
+    1) load-hhs.py: Loads weekly hospital bed information from hhs-data into the beds and the static hospital information from hhs-data into hospital tables in the database.
+
+    2) load-quality.py: Loads monthly cms data into the quality table in the database.
+
+    Both scripts require database credentials and are designed to handle data cleaning and insertion processes.
+
+- Prerequisites
+    Ensure Python is installed, and you have the necessary database access and permissions. The scripts use the psycopg library for PostgreSQL connections and pandas for data handling.
+
+- Setup Instructions
+1. Storing Your Credentials
+    1) Open credentials_template.py.
+    2) Fill in the placeholders with your DBNAME, USER, and PASSWORD.
+    3) Save the file as credentials.py in the Boelyn folder.
+
+2. Running load-hhs.py
+    This script performs several tasks:
+    Reads a CSV file containing hospital data.
+    Cleans the data, including handling geocoding and date formatting.
+    Inserts data into the hospital and beds tables.
+    Run the script using python load-hhs.py hhs-data/2022-01-04-hhs-data.csv
+
+3. Running load-quality.py
+    This script involves:
+    Parsing command-line arguments for data and a Hospital_General_Information CSV file input.
+    Reading and cleaning quality data from the CSV file.
+    Inserting data into the quality table, checking for existing hospital data.
+    Run the script using python load-quality.py YYYY-MM-DD cms-data/Hospital_General_Information-YYYY-DD.csv
+
+- Additional Notes
+    1) Ensure psycopg and pandas libraries are installed.
+    2) The scripts include error handling and logging for successful and failed data insertions.
+    3) Data cleaning functions and database insertion logic are defined within the scripts.
+    4) The order of script execution is important due to data dependencies.
