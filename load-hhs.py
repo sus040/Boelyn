@@ -1,28 +1,22 @@
 import psycopg
+import argparse
 import pandas as pd
-import sys
-from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 import datetime
+from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
+from hhs_helpers import geocode, hospital_insert
 
-######################
-#  Helper Functions  #
-######################
-
-
-def geocode(num):
-    """Handles geocode string unpacking for latitude/longitude"""
-    if isinstance(num, str):
-        coords = num.replace('POINT (', '').replace(')', '').split()
-        longitude = int(float(coords[0]))
-        latitude = int(float(coords[1]))
-        return latitude, longitude
-    else:
-        return None, None
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", action="store")
+parser.add_argument("-d", "--debug", action="store_true")
+args = parser.parse_args()
 
 
-filename = sys.argv[1]
-batch = pd.read_csv(filename)
+###########################
+# Data Reading & Cleaning #
+###########################
 
+
+batch = pd.read_csv(args.filename)
 print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
@@ -49,6 +43,7 @@ literal = (
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
+#@TODO replace with hospital_insert
 for idx, row in batch.iterrows():
     latitude, longitude = geocode(row['geocoded_hospital_address'])
     try:
