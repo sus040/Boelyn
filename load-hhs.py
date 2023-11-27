@@ -3,7 +3,7 @@ import argparse
 import os
 import pandas as pd
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
-from helpers import hospital_insert, beds_insert
+from helpers import hospital_insert, beds_insert, report_insert_results
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", action="store")
@@ -57,16 +57,12 @@ cur = conn.cursor()
 #############
 
 # Insert hospital data, write errors to the errors folder
-error_cases = pd.DataFrame(hospital_insert(cur, batch))
-error_cases.to_csv("error/hospital_errors.csv")
-print("Wrote " + len(error_cases) + "rejected rows to " +
-      "error/hospital_errors.csv")
+report_insert_results(hospital_insert(cur, batch), "hospital",
+                      "error/hospital_errors.csv", "error/hospital_msgs.csv")
 
 # Insert beds data, write errors to the errors folder
-error_cases = pd.DataFrame(beds_insert(cur, batch))
-error_cases.to_csv("error/beds_errors.csv")
-print("Wrote " + len(error_cases) + "rejected rows to " +
-      "error/beds_errors.csv")
+report_insert_results(beds_insert(cur, batch), "beds",
+                      "error/beds_errors.csv", "error/beds_msgs.csv")
 
 conn.commit()
 conn.close()
