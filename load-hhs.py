@@ -59,10 +59,11 @@ cur = conn.cursor()
 # Insert hospital data, write errors to the errors folder
 report_insert_results(hospital_insert(conn, cur, batch), "hospital",
                       "error/hospital_errors.csv", "error/hospital_msgs.csv")
+conn.commit()
+conn.close()
 
 # Insert beds data, write errors to the errors folder
 report_insert_results(beds_insert(conn, cur, batch), "beds",
                       "error/beds_errors.csv", "error/beds_msgs.csv")
-
 conn.commit()
 conn.close()

@@ -54,20 +54,22 @@ def hospital_insert(conn, cur, data):
     data - pandas dataframe batch of hospital records"""
     error_cases, error_msgs = [], []
     successes, fails = 0, 0
-    for _, row in data.iterrows():
-        latitude, longitude = geocode(row['geocoded_hospital_address'])
-        try:
-            cur.execute(HOSPITAL_LITERAL,
-                        (row['hospital_pk'], row['hospital_name'],
-                         row['address'], row['city'], row['zip'],
-                         row['fips_code'], row['state'], latitude, longitude))
-            successes += 1
-            conn.commit()
-        except Exception as e:
-            fails += 1
-            error_cases.append(row)
-            error_msgs.append(str(e))
-            conn.rollback()
+    with conn.transaction():
+        for _, row in data.iterrows():
+            latitude, longitude = geocode(row['geocoded_hospital_address'])
+            try:
+                with conn.transaction():
+                    cur.execute(HOSPITAL_LITERAL,
+                                (row['hospital_pk'], row['hospital_name'],
+                                 row['address'], row['city'], row['zip'],
+                                 row['fips_code'], row['state'],
+                                 latitude, longitude))
+            except Exception as e:
+                fails += 1
+                error_cases.append(row)
+                error_msgs.append(str(e))
+            else:
+                successes += 1
     return (successes, fails, error_cases, error_msgs)
 
 
