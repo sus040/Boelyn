@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import datetime
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
-from hhs_helpers import geocode, hospital_insert
+from hhs_helpers import hospital_insert, beds_insert
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", action="store")
@@ -18,93 +18,54 @@ if not os.path.exists("error"):
 ###########################
 # Data Reading & Cleaning #
 ###########################
-
-
-batch = pd.read_csv(args.filename)
+try:
+    batch = pd.read_csv(args.filename)
+except FileNotFoundError:
+    print(f"File not found: {args.filename}")
+    raise FileNotFoundError
 print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
-batch.replace(to_replace={'-999999.0': None, '-9999': None, 'NA': None})
+batch.replace(to_replace={'-999999.0': None, '-9999': None,
+                          -999999.0: None, -9999: None,
+                          'NA': None})
 batch.collection_week = batch.collection_week.apply(
     lambda x: datetime.datetime.strptime(x, '%Y-%m-%d')
 )
 
-# This is the weekly beds information for each hospital, needs to be inserted
-# into the `beds` table.
+# Duplicate check
+duplicate_rows = batch[batch.duplicated(
+    subset=['hospital_pk', 'collection_week'], keep=False)]
+batch = batch.drop_duplicates(subset=['hospital_pk', 'collection_week'])
+duplicate_rows.to_csv("error/hhs_duplicated.csv", index=False)
+print(str(len(duplicate_rows)) +
+      "duplicated rows output to error/hhs_duplicated.csv")
 
-conn = psycopg.connect(
-    host="pinniped.postgres.database.azure.com",
-    dbname=DBNAME, user=USER, password=PASSWORD
-)
+#######################
+# Database Connection #
+#######################
+try:
+    conn = psycopg.connect(
+        host="pinniped.postgres.database.azure.com",
+        dbname=DBNAME, user=USER, password=PASSWORD
+    )
+except Exception as e:
+    print(f"Database error (try checking credentials.py): {e}")
 
 
 cur = conn.cursor()
-successes, fails = 0, 0
 
-literal = (
-    "INSERT INTO hospital (hospital_pk, hospital_name, address, city, zip, "
-    "fips_code, state, latitude, longitude)"
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-)
+#############
+# Insertion #
+#############
 
-error_cases = []
-
-# @TODO replace with hospital_insert
-for idx, row in batch.iterrows():
-    latitude, longitude = geocode(row['geocoded_hospital_address'])
-    try:
-        cur.execute(literal,
-                    (row['hospital_pk'], row['hospital_name'], row['address'],
-                     row['city'], row['zip'], row['fips_code'],
-                     row['state'], latitude, longitude))
-        successes += 1
-    except Exception:  # should make this specific
-        fails += 1
-        error_cases.append(row)
-
-
-error_cases = pd.DataFrame(error_cases)
+# Insert hospital data, write errors to the errors folder
+error_cases = pd.DataFrame(hospital_insert(cur, batch))
 error_cases.to_csv("error/hospital_errors.csv")
-print("Successfully added:", str(successes), "rows to the hospitals table."
-      "\n" + str(fails) + "rows rejected", sep=" ")
 
-successes, fails = 0, 0
-
-literal = (
-    "INSERT INTO beds (hospital_pk, collection_week, "
-    "all_adult_hospital_beds_7_day_avg, "
-    "all_pediatric_inpatient_beds_7_day_avg, "
-    "all_adult_hospital_inpatient_bed_"
-    "occupied_7_day_coverage, "
-    "all_pediatric_inpatient_bed_occupied_7_day_avg, "
-    "total_icu_beds_7_day_avg, icu_beds_used_7_day_avg, "
-    "inpatient_beds_used_covid_7_day_avg, "
-    "staffed_icu_adult_patients_confirmed_covid_7_day_avg)"
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-)
-
-for idx, row in batch.iterrows():
-    try:
-        cur.execute(literal,
-                    (row['hospital_pk'], row['collection_week'],
-                     row['all_adult_hospital_beds_7_day_avg'],
-                     row['all_pediatric_inpatient_beds_7_day_avg'],
-                     row['all_adult_hospital_inpatient_bed_occupied_7_'
-                         'day_coverage'],
-                     row['all_pediatric_inpatient_bed_occupied_7_day_avg'],
-                     row['total_icu_beds_7_day_avg'],
-                     row['icu_beds_used_7_day_avg'],
-                     row['inpatient_beds_used_covid_7_day_avg'],
-                     row[
-                        'staffed_icu_adult_patients_confirmed_covid_7_day_avg'
-                     ]))
-        successes += 1
-    except Exception:  # should make this specific
-        fails += 1
-
-print("Successfully added:", str(successes), "rows to the beds table."
-      "\n" + str(fails) + "rows rejected", sep=" ")
-successes, fails = 0, 0
+# Insert beds data, write errors to the errors folder
+error_cases = pd.DataFrame(beds_insert(cur, batch))
+error_cases.to_csv("error/beds_errors.csv")
 
 conn.commit()
 conn.close()
