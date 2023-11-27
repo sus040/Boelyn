@@ -38,11 +38,11 @@ def report_insert_results(results, tbl_name, err_target, msg_target):
           "\n" + str(fails) + "rows rejected", sep=" ")
     error_cases = pd.DataFrame(error_cases)
     error_cases.to_csv(err_target)
-    print("Wrote" + str(len(error_cases)) + "rejected rows to" + err_target,
+    print("Wrote", str(len(error_cases)), "rejected rows to", err_target,
           sep=" ")
     error_msgs = pd.DataFrame(error_msgs)
     error_msgs.to_csv(msg_target)
-    print("Wrote" + str(len(error_msgs)) + "error messages to" + msg_target,
+    print("Wrote", str(len(error_msgs)), "error messages to", msg_target,
           sep=" ")
 
 
