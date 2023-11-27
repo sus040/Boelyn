@@ -35,7 +35,7 @@ def report_insert_results(results, tbl_name, err_target, msg_target):
     """Helper function to report results from an insert function"""
     successes, fails, error_cases, error_msgs = results
     print("Successfully added:", str(successes), "rows to the table", tbl_name,
-          "\n" + str(fails) + "rows rejected", sep=" ")
+          "\n", str(fails), "rows rejected", sep=" ")
     error_cases = pd.DataFrame(error_cases)
     error_cases.to_csv(err_target)
     print("Wrote", str(len(error_cases)), "rejected rows to", err_target,
