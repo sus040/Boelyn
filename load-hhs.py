@@ -20,7 +20,7 @@ batch = pd.read_csv(args.filename)
 print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
-batch.replace(to_replace={'-999999.0': None, 'NA': None})
+batch.replace(to_replace={'-999999.0': None, '-9999': None, 'NA': None})
 batch.collection_week = batch.collection_week.apply(
     lambda x: datetime.datetime.strptime(x, '%Y-%m-%d')
 )
@@ -43,7 +43,7 @@ literal = (
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
-#@TODO replace with hospital_insert
+# @TODO replace with hospital_insert
 for idx, row in batch.iterrows():
     latitude, longitude = geocode(row['geocoded_hospital_address'])
     try:
