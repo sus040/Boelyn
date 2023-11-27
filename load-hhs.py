@@ -2,6 +2,7 @@ import psycopg
 import argparse
 import os
 import pandas as pd
+import numpy as np
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 from helpers import hospital_insert, beds_insert, report_insert_results
 
@@ -25,9 +26,9 @@ except FileNotFoundError:
 print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
-batch.replace(to_replace={'-999999.0': None, '-9999': None,
-                          -999999.0: None, -9999: None,
-                          'NA': None})
+replacement = {'-999999.0': None, '-9999': None, -999999.0: None, -9999: None,
+               'NA': None, np.nan: None}
+batch.replace(to_replace=replacement, inplace=True)
 batch['collection_week'] = pd.to_datetime(batch['collection_week'])
 
 # Duplicate check
