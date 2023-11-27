@@ -46,7 +46,7 @@ def hospital_insert(cur, data):
                          row['address'], row['city'], row['zip'],
                          row['fips_code'], row['state'], latitude, longitude))
             successes += 1
-        except Exception:  # should make this specific
+        except Exception:
             fails += 1
             error_cases.append(row)
 
@@ -57,6 +57,7 @@ def hospital_insert(cur, data):
 
 
 def fetch_existing_hospital_pks(conn):
+    """Helper function to select hospital primary keys"""
     with conn.cursor() as cur:
         cur.execute("SELECT hospital_pk FROM hospital")
         existing_hospital_pks = set(row[0] for row in cur.fetchall())
@@ -86,7 +87,7 @@ def beds_insert(cur, data):
                          row['staffed_icu_adult_patients_confirmed_'
                              'covid_7_day_avg']))
             successes += 1
-        except Exception:  # should make this specific
+        except Exception:
             fails += 1
             error_cases.append(row)
 

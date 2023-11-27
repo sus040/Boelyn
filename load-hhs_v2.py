@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from credentials import DBNAME, USER, PASSWORD
-from hhs_helpers import geocode
+from helpers import geocode
 
 def read_and_clean_data(filename):
     try:

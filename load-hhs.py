@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import datetime
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
-from hhs_helpers import hospital_insert, beds_insert
+from helpers import hospital_insert, beds_insert
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", action="store")
@@ -39,7 +39,7 @@ duplicate_rows = batch[batch.duplicated(
 batch = batch.drop_duplicates(subset=['hospital_pk', 'collection_week'])
 duplicate_rows.to_csv("error/hhs_duplicated.csv", index=False)
 print(str(len(duplicate_rows)) +
-      "duplicated rows output to error/hhs_duplicated.csv")
+      " duplicated rows output to error/hhs_duplicated.csv")
 
 #######################
 # Database Connection #
