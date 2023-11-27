@@ -65,4 +65,5 @@ conn.commit()
 report_insert_results(beds_insert(conn, cur, batch), "beds",
                       "error/beds_errors.csv", "error/beds_msgs.csv")
 conn.commit()
+
 conn.close()
