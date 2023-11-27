@@ -36,8 +36,9 @@ duplicate_rows = batch[batch.duplicated(
     subset=['hospital_pk', 'collection_week'], keep=False)]
 batch = batch.drop_duplicates(subset=['hospital_pk', 'collection_week'])
 duplicate_rows.to_csv("error/hhs_duplicated.csv", index=False)
-print(str(len(duplicate_rows)) +
-      " duplicated rows output to error/hhs_duplicated.csv")
+print(str(len(duplicate_rows)),
+      "duplicated rows output to error/hhs_duplicated.csv",
+      sep=" ")
 
 #######################
 # Database Connection #
