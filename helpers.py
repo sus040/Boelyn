@@ -54,7 +54,7 @@ def hospital_insert(conn, cur, data):
     data - pandas dataframe batch of hospital records"""
     error_cases, error_msgs = [], []
     successes, fails = 0, 0
-    for idx, row in data.iterrows():
+    for _, row in data.iterrows():
         latitude, longitude = geocode(row['geocoded_hospital_address'])
         try:
             cur.execute(HOSPITAL_LITERAL,
@@ -89,7 +89,7 @@ def beds_insert(conn, cur, data):
     msg_target - filepath to write error messages to"""
     error_cases, error_msgs = [], []
     successes, fails = 0, 0
-    for idx, row in data.iterrows():
+    for _, row in data.iterrows():
         try:
             cur.execute(BEDS_LITERAL,
                         (row['hospital_pk'], row['collection_week'],
