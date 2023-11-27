@@ -28,8 +28,7 @@ print("Successfully read:", len(batch), "rows from file.")
 # Data Cleaning
 replacements = {'-999999.0': None, '-9999': None, -999999.0: None, -9999: None,
                 'NA': None, np.nan: None}
-batch.replace(to_replace=replacements,
-              inplace=True)
+batch.replace(to_replace=replacements, inplace=True)
 batch['collection_week'] = pd.to_datetime(batch['collection_week'])
 
 # Duplicate check
