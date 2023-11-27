@@ -46,7 +46,7 @@ def report_insert_results(results, tbl_name, err_target, msg_target):
           sep=" ")
 
 
-def hospital_insert(cur, data):
+def hospital_insert(conn, cur, data):
     """Handles insertion into the hospital table
     Inputs
     ------
@@ -62,10 +62,12 @@ def hospital_insert(cur, data):
                          row['address'], row['city'], row['zip'],
                          row['fips_code'], row['state'], latitude, longitude))
             successes += 1
+            conn.commit()
         except Exception as e:
             fails += 1
             error_cases.append(row)
             error_msgs.append(str(e))
+            conn.rollback()
     return (successes, fails, error_cases, error_msgs)
 
 
@@ -77,7 +79,7 @@ def fetch_existing_hospital_pks(conn):
     return existing_hospital_pks
 
 
-def beds_insert(cur, data):
+def beds_insert(conn, cur, data):
     """Handles insertion into the beds table
     Inputs
     ------
@@ -102,8 +104,10 @@ def beds_insert(cur, data):
                          row['staffed_icu_adult_patients_confirmed_'
                              'covid_7_day_avg']))
             successes += 1
+            conn.commit()
         except Exception as e:
             fails += 1
             error_cases.append(row)
             error_msgs.append(str(e))
+            conn.rollback()
     return (successes, fails, error_cases, error_msgs)
