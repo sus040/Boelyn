@@ -91,25 +91,27 @@ def beds_insert(conn, cur, data):
     msg_target - filepath to write error messages to"""
     error_cases, error_msgs = [], []
     successes, fails = 0, 0
-    for _, row in data.iterrows():
-        try:
-            cur.execute(BEDS_LITERAL,
-                        (row['hospital_pk'], row['collection_week'],
-                         row['all_adult_hospital_beds_7_day_avg'],
-                         row['all_pediatric_inpatient_beds_7_day_avg'],
-                         row['all_adult_hospital_inpatient_bed_occupied_7_'
-                             'day_coverage'],
-                         row['all_pediatric_inpatient_bed_occupied_7_day_avg'],
-                         row['total_icu_beds_7_day_avg'],
-                         row['icu_beds_used_7_day_avg'],
-                         row['inpatient_beds_used_covid_7_day_avg'],
-                         row['staffed_icu_adult_patients_confirmed_'
-                             'covid_7_day_avg']))
-            successes += 1
-            conn.commit()
-        except Exception as e:
-            fails += 1
-            error_cases.append(row)
-            error_msgs.append(str(e))
-            conn.rollback()
+    with conn.transaction():
+        for _, row in data.iterrows():
+            try:
+                with conn.transaction():
+                    cur.execute(BEDS_LITERAL,
+                                (row['hospital_pk'], row['collection_week'],
+                                 row['all_adult_hospital_beds_7_day_avg'],
+                                 row['all_pediatric_inpatient_beds_7_day_avg'],
+                                 row['all_adult_hospital_inpatient_bed_'
+                                     'occupied_7_day_coverage'],
+                                 row['all_pediatric_inpatient_bed_occupied_'
+                                     '7_day_avg'],
+                                 row['total_icu_beds_7_day_avg'],
+                                 row['icu_beds_used_7_day_avg'],
+                                 row['inpatient_beds_used_covid_7_day_avg'],
+                                 row['staffed_icu_adult_patients_confirmed_'
+                                     'covid_7_day_avg']))
+            except Exception as e:
+                fails += 1
+                error_cases.append(row)
+                error_msgs.append(str(e))
+            else:
+                successes += 1
     return (successes, fails, error_cases, error_msgs)
