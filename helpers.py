@@ -31,6 +31,14 @@ def geocode(num):
         return None, None
 
 
+def fetch_existing_hospital_pks(conn):
+    """Helper function to select hospital primary keys"""
+    with conn.cursor() as cur:
+        cur.execute("SELECT hospital_pk FROM hospital")
+        existing_hospital_pks = set(row[0] for row in cur.fetchall())
+    return existing_hospital_pks
+
+
 def report_insert_results(results, tbl_name, err_target, msg_target):
     """Helper function to report results from an insert function"""
     successes, fails, error_cases, error_msgs = results
@@ -71,14 +79,6 @@ def hospital_insert(conn, cur, data):
             else:
                 successes += 1
     return (successes, fails, error_cases, error_msgs)
-
-
-def fetch_existing_hospital_pks(conn):
-    """Helper function to select hospital primary keys"""
-    with conn.cursor() as cur:
-        cur.execute("SELECT hospital_pk FROM hospital")
-        existing_hospital_pks = set(row[0] for row in cur.fetchall())
-    return existing_hospital_pks
 
 
 def beds_insert(conn, cur, data):
