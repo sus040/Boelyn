@@ -59,10 +59,14 @@ cur = conn.cursor()
 # Insert hospital data, write errors to the errors folder
 error_cases = pd.DataFrame(hospital_insert(cur, batch))
 error_cases.to_csv("error/hospital_errors.csv")
+print("Wrote " + len(error_cases) + "rejected rows to " +
+      "error/hospital_errors.csv")
 
 # Insert beds data, write errors to the errors folder
 error_cases = pd.DataFrame(beds_insert(cur, batch))
 error_cases.to_csv("error/beds_errors.csv")
+print("Wrote " + len(error_cases) + "rejected rows to " +
+      "error/beds_errors.csv")
 
 conn.commit()
 conn.close()
