@@ -12,7 +12,10 @@ def read_and_clean_data(filename):
     except FileNotFoundError:
         print(f"File not found: {filename}")
         raise
-    batch.replace(to_replace={-999999.0: None, 'NA': None, np.nan: None}, inplace=True)
+    batch.replace(to_replace={-999999.0: None, -9999: None,
+                              '-999999.0': None, '-9999': None,
+                              'NA': None, np.nan: None},
+                  inplace=True)
     batch['collection_week'] = pd.to_datetime(batch['collection_week'])
     return batch
 

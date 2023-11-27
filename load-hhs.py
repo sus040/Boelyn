@@ -1,5 +1,6 @@
 import psycopg
 import argparse
+import os
 import pandas as pd
 import datetime
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
@@ -10,6 +11,9 @@ parser.add_argument("filename", action="store")
 parser.add_argument("-d", "--debug", action="store_true")
 args = parser.parse_args()
 
+
+if not os.path.exists("error"):
+    os.makedirs("error")
 
 ###########################
 # Data Reading & Cleaning #
@@ -43,6 +47,8 @@ literal = (
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 )
 
+error_cases = []
+
 # @TODO replace with hospital_insert
 for idx, row in batch.iterrows():
     latitude, longitude = geocode(row['geocoded_hospital_address'])
@@ -54,7 +60,11 @@ for idx, row in batch.iterrows():
         successes += 1
     except Exception:  # should make this specific
         fails += 1
+        error_cases.append(row)
 
+
+error_cases = pd.DataFrame(error_cases)
+error_cases.to_csv("error/hospital_errors.csv")
 print("Successfully added:", str(successes), "rows to the hospitals table."
       "\n" + str(fails) + "rows rejected", sep=" ")
 

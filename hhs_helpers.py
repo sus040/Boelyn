@@ -18,6 +18,7 @@ def geocode(num):
 
 
 def hospital_insert(cur, data):
+    error_cases = []
     successes, fails = 0, 0
     for idx, row in data.iterrows():
         latitude, longitude = geocode(row['geocoded_hospital_address'])
