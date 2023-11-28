@@ -17,21 +17,21 @@ CREATE TABLE beds (
     hospital_pk VARCHAR(255) NOT NULL,
     collection_week DATE NOT NULL,
     all_adult_hospital_beds_7_day_avg NUMERIC 
-    CHECK (all_adult_hospital_beds_7_day_avg > 0),
+    CHECK (all_adult_hospital_beds_7_day_avg >= 0),
     all_pediatric_inpatient_beds_7_day_avg NUMERIC
-    CHECK (all_pediatric_inpatient_beds_7_day_avg > 0),
+    CHECK (all_pediatric_inpatient_beds_7_day_avg >= 0),
     all_adult_hospital_inpatient_bed_occupied_7_day_coverage NUMERIC
-    CHECK (all_adult_hospital_inpatient_bed_occupied_7_day_coverage > 0),
+    CHECK (all_adult_hospital_inpatient_bed_occupied_7_day_coverage >= 0),
     all_pediatric_inpatient_bed_occupied_7_day_avg NUMERIC
-    CHECK (all_pediatric_inpatient_bed_occupied_7_day_avg > 0),
+    CHECK (all_pediatric_inpatient_bed_occupied_7_day_avg >= 0),
     total_icu_beds_7_day_avg NUMERIC
-    CHECK (total_icu_beds_7_day_avg > 0),
+    CHECK (total_icu_beds_7_day_avg >= 0),
     icu_beds_used_7_day_avg NUMERIC
-    CHECK (icu_beds_used_7_day_avg > 0),
+    CHECK (icu_beds_used_7_day_avg >= 0),
     inpatient_beds_used_covid_7_day_avg NUMERIC
-    CHECK (inpatient_beds_used_covid_7_day_avg > 0),
+    CHECK (inpatient_beds_used_covid_7_day_avg >= 0),
     staffed_icu_adult_patients_confirmed_covid_7_day_avg NUMERIC
-    CHECK (staffed_icu_adult_patients_confirmed_covid_7_day_avg > 0),
+    CHECK (staffed_icu_adult_patients_confirmed_covid_7_day_avg >= 0),
     FOREIGN KEY (hospital_pk) REFERENCES hospital(hospital_pk)
 );
 
