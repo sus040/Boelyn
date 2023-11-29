@@ -36,3 +36,12 @@ This README provides details and instructions for using the Python scripts load-
     2) The scripts include error handling and logging for successful and failed data insertions.
     3) Data cleaning functions and database insertion logic are defined within the scripts.
     4) The order of script execution is important due to data dependencies.
+
+To rerun code profiling: 
+python -m cProfile -s time <command line operation call> > target_file.txt
+
+So for example: 
+cProfile -s time load-hhs.py hhs-data/2022-09-23-hhs-data.csv > hhs-profile.txt
+
+Creates a time profile for the load-hhs.py script and pipes it into the 
+hhs-profile.txt file.
