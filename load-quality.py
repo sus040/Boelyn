@@ -6,6 +6,7 @@ from credentials import DBNAME, USER, PASSWORD  # Import database credentials
 import argparse  # Import argparse for parsing command-line arguments
 import time  # Import time for tracking execution time
 
+
 # Set up command-line argument parsing
 parser = argparse.ArgumentParser(
     description='Load hospital quality data into the database.'
@@ -40,6 +41,19 @@ def read_and_clean_data(csv_file):
         data['Hospital overall rating'].replace(
             'Not Available', None, inplace=True)
         data.replace(np.nan, None, inplace=True)
+        # Identify and optionally save duplicated rows
+        duplicates = data.duplicated(keep=False)  # Adjust 'keep' as needed
+        if duplicates.any():
+            duplicated_data = data[duplicates]
+            duplicated_data.to_csv(
+                f"duplicated_rows_{datetime.now().strftime('%Y-%m-%d')}.csv",
+                index=False)
+            print(
+                f"Duplicated rows saved to duplicated_rows_\
+                {datetime.now().strftime('%Y-%m-%d')}.csv")
+
+        # Drop duplicates
+        data.drop_duplicates(inplace=True)
         return data  # Return the cleaned data
     except Exception as e:
         print(f"Error reading CSV file: {e}")
@@ -48,7 +62,7 @@ def read_and_clean_data(csv_file):
 
 def insert_quality_data(conn, quality_data, date):
     """Inserts data into the postgreSQL table."""
-    start_time = time.time()  # Record the start time of the operation
+
     # Convert Facility ID to string
     quality_data['Facility ID'] = quality_data['Facility ID'].astype(str)
 
@@ -102,15 +116,15 @@ def insert_quality_data(conn, quality_data, date):
             skipped_df.to_csv(f"skipped_rows_{date}.csv", index=False)
             print(f"Skipped rows saved to skipped_rows_{date}.csv")
 
-    end_time = time.time()  # Record the end time of the operation
-    elapsed_time = end_time - start_time  # Calculate the total elapsed time
-    minutes = int(elapsed_time // 60)  # Convert time to minutes
-    seconds = int(elapsed_time % 60)  # Convert time to seconds
-    print(f"Operation completed in {minutes} minutes and {seconds} seconds.")
-
 
 # Main execution process
+start_time = time.time()  # Record the start time of the operation
 data = read_and_clean_data(args.csv_file)  # Read and clean the CSV data
 conn = connect_to_database()  # Establish a database connection
 insert_quality_data(conn, data, args.date)  # Insert data into the database
+end_time = time.time()  # Record the end time of the operation
+elapsed_time = end_time - start_time  # Calculate the total elapsed time
+minutes = int(elapsed_time // 60)  # Convert time to minutes
+seconds = int(elapsed_time % 60)  # Convert time to seconds
+print(f"Operation completed in {minutes} minutes and {seconds} seconds.")
 conn.close()  # Close the database connection
