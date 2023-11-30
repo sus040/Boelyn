@@ -113,7 +113,7 @@ def insert_quality_data(conn, quality_data, date):
         print(f"Number of skipped rows: {num_skipped_rows}")
         if skipped_rows_data:
             skipped_df = pd.DataFrame(skipped_rows_data)
-            skipped_df.to_csv(f"skipped_rows_{date}.csv", index=False)
+            skipped_df.to_csv(f"error/skipped_rows_{date}.csv", index=False)
             print(f"Skipped rows saved to skipped_rows_{date}.csv")
 
 
