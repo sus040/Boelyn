@@ -26,6 +26,7 @@ except FileNotFoundError:
 print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
+# @TODO enforce nonnegativity here
 replacements = {'-999999.0': None, '-9999': None, -999999.0: None, -9999: None,
                 'NA': None, np.nan: None}
 batch.replace(to_replace=replacements, inplace=True)
