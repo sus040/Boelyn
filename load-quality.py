@@ -109,8 +109,12 @@ def insert_quality_data(conn, quality_data, date):
         print("Data successfully inserted into the 'quality' table.")
 
         # Display and save the number of skipped rows
+        num_inserted_rows = len(insert_data)
+        print(f"Number of inserted rows: {num_inserted_rows}")
         num_skipped_rows = len(skipped_rows_data)
         print(f"Number of skipped rows: {num_skipped_rows}")
+        num_actual_inserted_rows = num_inserted_rows - num_skipped_rows
+        print(f"Number of actual inserted rows: {num_actual_inserted_rows}")
         if skipped_rows_data:
             skipped_df = pd.DataFrame(skipped_rows_data)
             skipped_df.to_csv(f"error/skipped_rows_{date}.csv", index=False)
