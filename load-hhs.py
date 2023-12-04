@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg
 import argparse
 import os
 import pandas as pd
@@ -40,8 +40,10 @@ print(str(len(duplicate_rows)),
       "duplicated rows output to error/hhs_duplicated.csv",
       sep=" ")
 
+# Enforcing non-nullity
+
 # Enforcing non-negativity
-negative_beds_ridx = (batch["all_adult_hospital_beds_7_day_avg"] < 0) | \
+check_ridx = (batch["all_adult_hospital_beds_7_day_avg"] < 0) | \
     (batch["all_pediatric_inpatient_beds_7_day_avg"] < 0) | \
     (batch["all_adult_hospital_inpatient_bed_occupied"
            "_7_day_coverage"] < 0) | \
@@ -50,18 +52,18 @@ negative_beds_ridx = (batch["all_adult_hospital_beds_7_day_avg"] < 0) | \
     (batch["icu_beds_used_7_day_avg"] < 0) | \
     (batch["inpatient_beds_used_covid_7_day_avg"] < 0) | \
     (batch["staffed_icu_adult_patients_confirmed_covid_7_day_avg"] < 0)
-negatives = batch[negative_beds_ridx]
+negatives = batch[check_ridx]
 negatives.to_csv("error/hhs_negatives.csv", index=False)
 print(str(len(negatives)),
       "rows with negative beds values output to error/hhs_negatives.csv",
       sep=" ")
-batch = batch[~negative_beds_ridx]
+batch = batch[~check_ridx]
 
 #######################
 # Database Connection #
 #######################
 try:
-    conn = psycopg2.connect(
+    conn = psycopg.connect(
         host="pinniped.postgres.database.azure.com",
         dbname=DBNAME, user=USER, password=PASSWORD
     )
