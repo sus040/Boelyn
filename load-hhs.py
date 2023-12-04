@@ -26,7 +26,6 @@ except FileNotFoundError:
 print("Successfully read:", len(batch), "rows from file.")
 
 # Data Cleaning
-# @TODO enforce nonnegativity here
 replacements = {'-999999.0': None, '-9999': None, -999999.0: None, -9999: None,
                 'NA': None, np.nan: None}
 batch.replace(to_replace=replacements, inplace=True)
@@ -40,6 +39,33 @@ duplicate_rows.to_csv("error/hhs_duplicated.csv", index=False)
 print(str(len(duplicate_rows)),
       "duplicated rows output to error/hhs_duplicated.csv",
       sep=" ")
+
+# Enforcing non-nullity
+check_ridx = (batch["hospital_pk"].isnull()) | \
+    (batch["collection_week"].isnull())
+nulls = batch[check_ridx]
+nulls.to_csv("error/hhs_nulls.csv", index=False)
+print(str(len(nulls)),
+      "rows with nulls in key columns output to error/hhs_nulls.csv",
+      sep=" ")
+batch = batch[~check_ridx]
+
+# Enforcing non-negativity
+check_ridx = (batch["all_adult_hospital_beds_7_day_avg"] < 0) | \
+    (batch["all_pediatric_inpatient_beds_7_day_avg"] < 0) | \
+    (batch["all_adult_hospital_inpatient_bed_occupied"
+           "_7_day_coverage"] < 0) | \
+    (batch["all_pediatric_inpatient_bed_occupied_7_day_avg"] < 0) | \
+    (batch["total_icu_beds_7_day_avg"] < 0) | \
+    (batch["icu_beds_used_7_day_avg"] < 0) | \
+    (batch["inpatient_beds_used_covid_7_day_avg"] < 0) | \
+    (batch["staffed_icu_adult_patients_confirmed_covid_7_day_avg"] < 0)
+negatives = batch[check_ridx]
+negatives.to_csv("error/hhs_negatives.csv", index=False)
+print(str(len(negatives)),
+      "rows with negative beds values output to error/hhs_negatives.csv",
+      sep=" ")
+batch = batch[~check_ridx]
 
 #######################
 # Database Connection #
