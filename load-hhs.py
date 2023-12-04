@@ -41,6 +41,14 @@ print(str(len(duplicate_rows)),
       sep=" ")
 
 # Enforcing non-nullity
+check_ridx = (batch["hospital_pk"] is not np.nan) | \
+    (batch["collection_week"] is not np.nan)
+nulls = batch[check_ridx]
+nulls.to_csv("error/hhs_nulls.csv", index=False)
+print(str(len(nulls)),
+      "rows with nulls in key columns output to error/hhs_nulls.csv",
+      sep=" ")
+batch = batch[~check_ridx]
 
 # Enforcing non-negativity
 check_ridx = (batch["all_adult_hospital_beds_7_day_avg"] < 0) | \
