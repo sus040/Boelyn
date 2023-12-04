@@ -41,6 +41,23 @@ print(str(len(duplicate_rows)),
       "duplicated rows output to error/hhs_duplicated.csv",
       sep=" ")
 
+# Enforcing non-negativity
+negative_beds_ridx = (batch["all_adult_hospital_beds_7_day_avg"] < 0) | \
+    (batch["all_pediatric_inpatient_beds_7_day_avg"] < 0) | \
+    (batch["all_adult_hospital_inpatient_bed_occupied"
+           "_7_day_coverage"] < 0) | \
+    (batch["all_pediatric_inpatient_bed_occupied_7_day_avg"] < 0) | \
+    (batch["total_icu_beds_7_day_avg"] < 0) | \
+    (batch["icu_beds_used_7_day_avg"] < 0) | \
+    (batch["inpatient_beds_used_covid_7_day_avg"] < 0) | \
+    (batch["staffed_icu_adult_patients_confirmed_covid_7_day_avg"] < 0)
+negatives = batch[negative_beds_ridx]
+negatives.to_csv("error/hhs_negatives.csv", index=False)
+print(str(len(negatives)),
+      "rows with negative beds values output to error/hhs_negatives.csv",
+      sep=" ")
+batch = batch[~negative_beds_ridx]
+
 #######################
 # Database Connection #
 #######################
