@@ -1,4 +1,4 @@
-import psycopg
+import psycopg2
 import argparse
 import os
 import pandas as pd
@@ -61,7 +61,7 @@ batch = batch[~negative_beds_ridx]
 # Database Connection #
 #######################
 try:
-    conn = psycopg.connect(
+    conn = psycopg2.connect(
         host="pinniped.postgres.database.azure.com",
         dbname=DBNAME, user=USER, password=PASSWORD
     )

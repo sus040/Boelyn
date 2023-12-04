@@ -1,7 +1,7 @@
 import pandas as pd  # Import pandas library for data manipulation
 import numpy as np  # Import numpy library for numerical operations
 from datetime import datetime  # Import datetime for handling dates
-import psycopg  # Import psycopg for postgreSQL database connection
+import psycopg2  # Import psycopg for postgreSQL database connection
 from credentials import DBNAME, USER, PASSWORD  # Import database credentials
 import argparse  # Import argparse for parsing command-line arguments
 import time  # Import time for tracking execution time
@@ -20,7 +20,7 @@ def connect_to_database():
     """Establishes and returns a database connection."""
     try:
         # Connect to the postgreSQL database
-        conn = psycopg.connect(
+        conn = psycopg2.connect(
             host="pinniped.postgres.database.azure.com",
             dbname=DBNAME, user=USER, password=PASSWORD
         )
