@@ -14,8 +14,8 @@ CREATE TABLE hospital (
 
 CREATE TABLE beds (
     record_id SERIAL PRIMARY KEY,
-    hospital_pk VARCHAR(255) NOT NULL,
-    collection_week DATE NOT NULL,
+    hospital_pk VARCHAR(255),
+    collection_week DATE,
     all_adult_hospital_beds_7_day_avg NUMERIC,
     all_pediatric_inpatient_beds_7_day_avg NUMERIC,
     all_adult_hospital_inpatient_bed_occupied_7_day_coverage NUMERIC,

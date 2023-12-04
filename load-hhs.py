@@ -41,8 +41,8 @@ print(str(len(duplicate_rows)),
       sep=" ")
 
 # Enforcing non-nullity
-check_ridx = (batch["hospital_pk"] is not np.nan) | \
-    (batch["collection_week"] is not np.nan)
+check_ridx = (batch["hospital_pk"].isnull()) | \
+    (batch["collection_week"].isnull())
 nulls = batch[check_ridx]
 nulls.to_csv("error/hhs_nulls.csv", index=False)
 print(str(len(nulls)),
