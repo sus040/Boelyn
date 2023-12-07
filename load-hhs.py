@@ -96,8 +96,8 @@ conn.commit()
 
 # Insert beds data, write errors to the errors folder
 results = beds_insert(conn, cur, batch)
-results = filter_duplication_errors(results, "error/beds_dup_cases.csv",
-                                    "error/beds_dup_msgs.csv")
+# results = filter_duplication_errors(results, "error/beds_dup_cases.csv",
+#                                     "error/beds_dup_msgs.csv")
 report_insert_results(results, "beds",
                       "error/beds_errors.csv", "error/beds_msgs.csv")
 conn.commit()
