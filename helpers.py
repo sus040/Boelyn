@@ -48,6 +48,7 @@ def filter_duplication_errors(results, dup_target, msg_target):
     if error_cases.empty or error_msgs.empty:
         return (successes, fails, error_cases, error_msgs)
     dup_msg = "duplicate key value violates unique constraint"
+    print(error_msgs)
     dup_idx = error_msgs.iloc[:, -1].str.contains(dup_msg)
     dup_cases = error_cases[dup_idx]
     dup_cases.to_csv(dup_target, index=False)
