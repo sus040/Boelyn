@@ -39,6 +39,25 @@ def fetch_existing_hospital_pks(conn):
     return existing_hospital_pks
 
 
+def filter_duplication_errors(results, dup_target, msg_target):
+    """Helper function to filter out duplication errors
+    Assumes that error messages are in a single column"""
+    successes, fails, error_cases, error_msgs = results
+    error_cases = pd.DataFrame(error_cases)
+    error_msgs = pd.DataFrame(error_msgs)
+    if error_cases.empty or error_msgs.empty:
+        return (successes, fails, error_cases, error_msgs)
+    dup_msg = "duplicate key value violates unique constraint"
+    print(error_msgs)
+    dup_idx = error_msgs.iloc[:, -1].str.contains(dup_msg)
+    dup_cases = error_cases[dup_idx]
+    dup_cases.to_csv(dup_target, index=False)
+    dup_msgs = error_msgs[dup_idx]
+    dup_msgs.to_csv(msg_target, index=False)
+    error_cases = error_cases[~dup_idx]
+    return (successes, fails, error_cases, error_msgs)
+
+
 def report_insert_results(results, tbl_name, err_target, msg_target):
     """Helper function to report results from an insert function"""
     successes, fails, error_cases, error_msgs = results
