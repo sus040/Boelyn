@@ -45,10 +45,10 @@ def filter_duplication_errors(results, dup_target, msg_target):
     successes, fails, error_cases, error_msgs = results
     error_cases = pd.DataFrame(error_cases)
     error_msgs = pd.DataFrame(error_msgs)
+    if error_cases.empty or error_msgs.empty:
+        return (successes, fails, error_cases, error_msgs)
     dup_msg = "duplicate key value violates unique constraint"
     dup_idx = error_msgs.iloc[:, -1].str.contains(dup_msg)
-    if len(dup_idx) == 0:
-        return (successes, fails, error_cases, error_msgs)
     dup_cases = error_cases[dup_idx]
     dup_cases.to_csv(dup_target, index=False)
     dup_msgs = error_msgs[dup_idx]
