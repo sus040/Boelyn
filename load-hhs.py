@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from credentials import DBNAME, USER, PASSWORD  # check credentials_template.py
 from helpers import hospital_insert, beds_insert, \
-    report_insert_results, filter_duplication_errors
+    report_insert_results
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", action="store")
@@ -88,16 +88,12 @@ cur = conn.cursor()
 
 # Insert hospital data, write errors to the errors folder
 results = hospital_insert(conn, cur, batch)
-results = filter_duplication_errors(results, "error/hospital_dup_cases.csv",
-                                    "error/hospital_dup_msgs.csv")
 report_insert_results(results, "hospital",
                       "error/hospital_errors.csv", "error/hospital_msgs.csv")
 conn.commit()
 
 # Insert beds data, write errors to the errors folder
 results = beds_insert(conn, cur, batch)
-results = filter_duplication_errors(results, "error/beds_dup_cases.csv",
-                                    "error/beds_dup_msgs.csv")
 report_insert_results(results, "beds",
                       "error/beds_errors.csv", "error/beds_msgs.csv")
 conn.commit()
