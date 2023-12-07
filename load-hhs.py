@@ -88,16 +88,16 @@ cur = conn.cursor()
 
 # Insert hospital data, write errors to the errors folder
 results = hospital_insert(conn, cur, batch)
-# results = filter_duplication_errors(results, "error/hospital_dup_cases.csv",
-#                                     "error/hospital_dup_msgs.csv")
+results = filter_duplication_errors(results, "error/hospital_dup_cases.csv",
+                                    "error/hospital_dup_msgs.csv")
 report_insert_results(results, "hospital",
                       "error/hospital_errors.csv", "error/hospital_msgs.csv")
 conn.commit()
 
 # Insert beds data, write errors to the errors folder
 results = beds_insert(conn, cur, batch)
-# results = filter_duplication_errors(results, "error/beds_dup_cases.csv",
-#                                     "error/beds_dup_msgs.csv")
+results = filter_duplication_errors(results, "error/beds_dup_cases.csv",
+                                    "error/beds_dup_msgs.csv")
 report_insert_results(results, "beds",
                       "error/beds_errors.csv", "error/beds_msgs.csv")
 conn.commit()
