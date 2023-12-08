@@ -31,6 +31,13 @@ This README provides details and instructions for using the Python scripts load-
     Inserting data into the quality table, checking for existing hospital data.
     Run the script using python load-quality.py YYYY-MM-DD cms-data/Hospital_General_Information-YYYY-DD.csv
 
+4. Running the Reporting
+    papermill visualizations.ipynb output.ipynb -p week '2022-09-23'
+    jupyter nbconvert --no-input --to-html output.ipynb
+
+    Note that a pdf version of the visualizations will not support
+    the heatmap visualization.
+
 - Additional Notes
     1) Ensure psycopg and pandas libraries are installed.
     2) The scripts include error handling and logging for successful and failed data insertions.
